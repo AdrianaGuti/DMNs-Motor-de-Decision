@@ -35,6 +35,13 @@
             <artifactId>spring-boot-starter-actuator</artifactId>
         </dependency>
 
+        <!-- springdoc-openapi — Swagger UI (equivalente a Swashbuckle en .NET) -->
+        <dependency>
+            <groupId>org.springdoc</groupId>
+            <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
+            <version>2.3.0</version>
+        </dependency>
+
         <!-- Drools / Apache KIE — motor DMN -->
         <dependency>
             <groupId>org.kie</groupId>

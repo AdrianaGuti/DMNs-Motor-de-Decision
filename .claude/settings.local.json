@@ -1,0 +1,16 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(curl -s --max-time 8 http://localhost:8080/health -o health.txt)",
+      "Bash(echo \"health exit=$? content=$\\(cat health.txt \\)\")",
+      "Bash(docker stats *)",
+      "Bash(docker exec *)",
+      "Bash(echo \"exec falló: $?\")",
+      "Bash(curl -s --max-time 8 -o api-docs.json -w \"127.0.0.1 /v3/api-docs -> HTTP %{http_code} \\(exit %{exitcode}\\)\\\\n\" http://127.0.0.1:8080/v3/api-docs)",
+      "Bash(ls -la api-docs.json)",
+      "Bash(head -c 200 api-docs.json)",
+      "Bash(curl -s --max-time 8 -o /dev/null -w \"swagger-ui -> HTTP %{http_code}\\\\n\" http://127.0.0.1:8080/swagger-ui/index.html)",
+      "Bash(docker compose *)"
+    ]
+  }
+}
