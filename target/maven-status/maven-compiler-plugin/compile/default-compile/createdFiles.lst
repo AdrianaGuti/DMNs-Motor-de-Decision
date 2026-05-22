@@ -1,8 +1,0 @@
-com\example\dmnsidecar\DmnSidecarApplication.class
-com\example\dmnsidecar\cache\DmnRuntimeCache$Entry.class
-com\example\dmnsidecar\model\EvaluateResponse.class
-com\example\dmnsidecar\cache\DmnRuntimeCache.class
-com\example\dmnsidecar\model\EvaluateRequest.class
-com\example\dmnsidecar\model\MatchedRule.class
-com\example\dmnsidecar\service\DmnService.class
-com\example\dmnsidecar\controller\DmnController.class
