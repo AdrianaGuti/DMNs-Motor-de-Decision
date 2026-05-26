@@ -82,6 +82,18 @@ public class DmnXmlTransformer {
 
             String result = serializeDocument(doc);
             log.debug("XML transformado OK. inputData mapeados: {}", inputTypeMap);
+/*  Bloque para generar el archivo XML transformado para pruebas.
+            try {
+                java.nio.file.Files.writeString(
+                    java.nio.file.Path.of("C:\\www\\xml-transformado.xml"),
+                    result,
+                    StandardCharsets.UTF_8
+                );
+                log.info("XML transformado volcado en C:\\www\\xml-transformado.xml");
+            } catch (Exception ex) {
+                log.warn("No se pudo escribir xml-transformado.xml: {}", ex.getMessage());
+            }
+             */
             return result;
 
         } catch (Exception e) {
@@ -131,11 +143,18 @@ public class DmnXmlTransformer {
         NodeList inputDataList = doc.getElementsByTagNameNS(DMN_NS, "inputData");
         for (int i = 0; i < inputDataList.getLength(); i++) {
             Element inputData = (Element) inputDataList.item(i);
-            if (hasChildElement(inputData, "variable")) continue;
-
-            String name = inputData.getAttribute("name");
-            String id   = inputData.getAttribute("id");
+            String name    = inputData.getAttribute("name");
+            String id      = inputData.getAttribute("id");
             String typeRef = inputTypeMap.getOrDefault(name, "string");
+
+            Element existing = findChildElement(inputData, "variable");
+            if (existing != null) {
+                if (!name.equals(existing.getAttribute("name"))) {
+                    log.info("variable.name corregido en inputData '{}': '{}' -> '{}'", id, existing.getAttribute("name"), name);
+                    existing.setAttribute("name", name);
+                }
+                continue;
+            }
 
             Element variable = doc.createElementNS(DMN_NS, "variable");
             variable.setAttribute("id", id + "_var");
@@ -150,10 +169,18 @@ public class DmnXmlTransformer {
         NodeList decisions = doc.getElementsByTagNameNS(DMN_NS, "decision");
         for (int i = 0; i < decisions.getLength(); i++) {
             Element decision = (Element) decisions.item(i);
-            if (hasChildElement(decision, "variable")) continue;
-
             String name    = decision.getAttribute("name");
             String id      = decision.getAttribute("id");
+
+            Element existing = findChildElement(decision, "variable");
+            if (existing != null) {
+                if (!name.equals(existing.getAttribute("name"))) {
+                    log.info("variable.name corregido en decision '{}': '{}' -> '{}'", id, existing.getAttribute("name"), name);
+                    existing.setAttribute("name", name);
+                }
+                continue;
+            }
+
             String typeRef = getDecisionOutputTypeRef(decision);
 
             Element variable = doc.createElementNS(DMN_NS, "variable");
@@ -181,15 +208,15 @@ public class DmnXmlTransformer {
         return "string";
     }
 
-    private boolean hasChildElement(Element parent, String localName) {
+    private Element findChildElement(Element parent, String localName) {
         NodeList children = parent.getChildNodes();
         for (int i = 0; i < children.getLength(); i++) {
             Node child = children.item(i);
             if (child.getNodeType() == Node.ELEMENT_NODE && localName.equals(child.getLocalName())) {
-                return true;
+                return (Element) child;
             }
         }
-        return false;
+        return null;
     }
 
     private Node firstElementChild(Element parent) {

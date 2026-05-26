@@ -57,7 +57,9 @@ public class DmnService {
             DMNRuntime runtime = entry.runtime();
             DMNModel model = entry.model();
 
-            if (request.decisionName() != null && !request.decisionName().isBlank()) {
+            boolean hasDecisionName = request.decisionName() != null && !request.decisionName().isBlank();
+
+            if (hasDecisionName) {
                 boolean found = model.getDecisions().stream()
                     .anyMatch(d -> d.getName().equals(request.decisionName()));
                 if (!found) {
@@ -71,7 +73,9 @@ public class DmnService {
                 request.inputs().forEach(context::set);
             }
 
-            DMNResult dmnResult = runtime.evaluateAll(model, context);
+            DMNResult dmnResult = hasDecisionName
+                ? runtime.evaluateByName(model, context, request.decisionName())
+                : runtime.evaluateAll(model, context);
 
             List<DMNMessage> errors = dmnResult.getMessages(DMNMessage.Severity.ERROR);
             if (!errors.isEmpty()) {
